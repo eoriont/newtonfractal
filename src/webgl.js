@@ -11,14 +11,21 @@ function createShader(gl, type, source) {
 
 function createProgram(gl, vertexShader, fragmentShader) {
   let program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
+
+  try {
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+  } catch (e) {
+    throw "Didn't compile!"
+  }
+
+
   gl.linkProgram(program);
   let success = gl.getProgramParameter(program, gl.LINK_STATUS);
   if (success) {
     return program
   }
-  console.log(gl.getProgramInfoLog(program))
+  // console.log(gl.getProgramInfoLog(program))
   gl.deleteProgram(program);
 }
 

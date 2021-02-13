@@ -10,7 +10,8 @@ const gl = canvas.getContext("webgl2");
 
 var program;
 var vertexCode, fragmentCode;
-var func = "z^3 + 1 + m";
+
+var func = "z^3 + m";
 
 function getFragCode(func) {
   let [compiledFunc, compiledDeriv] = compileFunc(func);
@@ -22,9 +23,15 @@ function getFragCode(func) {
 }
 
 async function init() {
+  vertexCode = await (await fetch('./vertex_shader.vert')).text();
+  fragmentCode = await (await fetch('./fragment_shader.frag')).text();
+  createCanvas();
+}
+
+function createCanvas() {
   if (!vertexCode || !fragmentCode) {
-    vertexCode = await (await fetch('./vertex_shader.vert')).text();
-    fragmentCode = await (await fetch('./fragment_shader.frag')).text();
+    console.warn("Vertex or Fragment code not loaded yet!")
+    return
   }
 
   let newFragCode = getFragCode(func);
@@ -32,7 +39,12 @@ async function init() {
   let vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexCode);
   let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, newFragCode);
 
-  let program = createProgram(gl, vertexShader, fragmentShader);
+  let program;
+  try {
+    program = createProgram(gl, vertexShader, fragmentShader);
+  } catch (e) {
+    throw "Didn't compile!";
+  }
 
   let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
   let positionBuffer = gl.createBuffer();
@@ -88,6 +100,9 @@ function render() {
 }
 
 document.addEventListener("mousemove", (e) => {
+  // Don't change if modal is open
+  if (modal.style.display == "block") return
+
   // Set mousepos uniform every time user moves mouse
   let gl = canvas.getContext("webgl2");
   let programLocation = gl.getParameter(gl.CURRENT_PROGRAM);
@@ -101,8 +116,22 @@ functionBox.value = func;
 functionBox.addEventListener("change", (e) => {
   func = functionBox.value;
   clearGL(program);
-  init();
+  try {
+    createCanvas();
+    setError(false);
+  } catch (e) {
+    console.log(e)
+    setError(true);
+  }
 })
+
+function setError(status) {
+  if (status) {
+    functionBox.style.backgroundColor = "#F78167"
+  } else {
+    functionBox.style.backgroundColor = "#FFF"
+  }
+}
 
 function compileFunc(str) {
   let lexer = new Lexer(str);
