@@ -1,0 +1,26 @@
+{
+  "name": "newtonfractal",
+  "version": "1.0.0",
+  "description": "",
+  "private": "true",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eoriont/newtonfractal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eoriont/newtonfractal/issues"
+  },
+  "homepage": "https://github.com/eoriont/newtonfractal#readme",
+  "devDependencies": {
+    "webpack": "^5.21.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
